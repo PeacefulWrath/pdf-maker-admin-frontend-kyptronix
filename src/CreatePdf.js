@@ -8,7 +8,8 @@ export default function CreatePdf() {
   const [file, setFile] = useState(null);
   const [error, setError] = useState("");
   const [files, setFiles] = useState([]);
-
+  const[disableUploadBtn,setDisableUploadBtn]=useState(true);
+  
   const saveFile = async (formData) => {
     let fileData = {};
     try {
@@ -33,6 +34,7 @@ export default function CreatePdf() {
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile && selectedFile.type === "application/pdf") {
+      setDisableUploadBtn(false)
       setFile(selectedFile);
       setError("");
     } else {
@@ -50,7 +52,7 @@ export default function CreatePdf() {
       window.location.reload();
     } else {
       alert("pdf upload failed");
-    }
+    } 
   };
 
   useEffect(() => {
@@ -87,19 +89,26 @@ export default function CreatePdf() {
         <div className="d-flex justify-content-center align-items-center">
           <button
             className="btn"
-            style={{ backgroundColor: "green" }}
+            style={{ backgroundColor: "green", color:"white" }}
             onClick={handleUpload}
+            disabled={disableUploadBtn}
           >
             Upload
           </button>
-          {error && (
+          
+        </div>
+        {error && (
+           <div className="d-flex justify-content-center align-items-center">
             <p style={{ color: "red", marginTop: "23px", marginLeft: "5px" }}>
               {error}
             </p>
+            </div>
           )}
-        </div>
       </div>
-      {files.length !== 0 && <PdfList files={files} />}
+      {files.length !== 0 ? <PdfList files={files} />:<div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+      <div className="spinner-border" role="status">
+      </div>
+    </div>}
     </>
   );
 }

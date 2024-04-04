@@ -5,7 +5,8 @@ import { Link } from "react-router-dom";
 
 function PdfList(props) {
   return (
-    <>
+    <div className="mt-5">
+    <hr style={{color:"#6A0DAD"}}/>
       {props.files.length !== 0 && (
         <div className="container-fluid mt-5">
           <div className="row justify-content-center">
@@ -37,7 +38,7 @@ function PdfList(props) {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }
 

@@ -1,6 +1,7 @@
 import { Fragment } from "react";
 
 const Watermark = () => {
+  const watermarkImageUrl = process.env.REACT_APP_WATERMARK;
   return (
     <Fragment>
       <div
@@ -13,7 +14,7 @@ const Watermark = () => {
         }}
       >
         <img
-          src="https://e7.pngegg.com/pngimages/640/199/png-clipart-javascript-logo-html-javascript-logo-angle-text-thumbnail.png"
+          src={watermarkImageUrl}
           alt="Watermark"
         />
       </div>
