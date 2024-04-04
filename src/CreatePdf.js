@@ -8,8 +8,8 @@ export default function CreatePdf() {
   const [file, setFile] = useState(null);
   const [error, setError] = useState("");
   const [files, setFiles] = useState([]);
-  const[disableUploadBtn,setDisableUploadBtn]=useState(true);
-  
+  const [disableUploadBtn, setDisableUploadBtn] = useState(true);
+
   const saveFile = async (formData) => {
     let fileData = {};
     try {
@@ -31,10 +31,34 @@ export default function CreatePdf() {
     }
   };
 
+  const convertFile = async (formData) => {
+    let convertedMessage = {};
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}/api/convert`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      //   console.log("ll", response);
+      convertedMessage = response.data.message;
+      console.log(convertedMessage)
+    } catch (error) {
+      console.log("err", error);
+    } finally {
+      return convertedMessage;
+    }
+  };
+
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-    if (selectedFile && selectedFile.type === "application/pdf") {
-      setDisableUploadBtn(false)
+    if (selectedFile 
+      && (selectedFile.type === "application/pdf"||selectedFile.type  === "docx" || selectedFile.type  === "pptx" || selectedFile.type  === "XLSX")
+      ) {
+      setDisableUploadBtn(false);
       setFile(selectedFile);
       setError("");
     } else {
@@ -46,13 +70,23 @@ export default function CreatePdf() {
   const handleUpload = async () => {
     const formData = new FormData();
     formData.append("file", file);
+    console.log("fff", file.name.split(".")[1]);
+    const fileType = file.name.split(".")[1];
+    if (fileType === "docx" || fileType === "pptx" || fileType === "XLSX") {
+      const convertedData = await convertFile(formData);
+
+      if (convertedData !== "file converted successfully") {
+        alert("file conversion failed");
+        return;
+      }
+    }
     const insertedData = await saveFile(formData);
     if (insertedData) {
       alert("pdf uploaded successfully");
       window.location.reload();
     } else {
       alert("pdf upload failed");
-    } 
+    }
   };
 
   useEffect(() => {
@@ -89,26 +123,31 @@ export default function CreatePdf() {
         <div className="d-flex justify-content-center align-items-center">
           <button
             className="btn"
-            style={{ backgroundColor: "green", color:"white" }}
+            style={{ backgroundColor: "green", color: "white" }}
             onClick={handleUpload}
             disabled={disableUploadBtn}
           >
             Upload
           </button>
-          
         </div>
         {error && (
-           <div className="d-flex justify-content-center align-items-center">
+          <div className="d-flex justify-content-center align-items-center">
             <p style={{ color: "red", marginTop: "23px", marginLeft: "5px" }}>
               {error}
             </p>
-            </div>
-          )}
+          </div>
+        )}
       </div>
-      {files.length !== 0 ? <PdfList files={files} />:<div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
-      <div className="spinner-border" role="status">
-      </div>
-    </div>}
+      {files.length !== 0 ? (
+        <PdfList files={files} />
+      ) : (
+        <div
+          className="d-flex justify-content-center align-items-center"
+          style={{ height: "100vh" }}
+        >
+          <div className="spinner-border" role="status"></div>
+        </div>
+      )}
     </>
   );
 }
