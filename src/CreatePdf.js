@@ -45,7 +45,7 @@ export default function CreatePdf() {
       );
       //   console.log("ll", response);
       convertedMessage = response.data.message;
-      console.log(convertedMessage)
+      console.log(convertedMessage);
     } catch (error) {
       console.log("err", error);
     } finally {
@@ -55,15 +55,23 @@ export default function CreatePdf() {
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-    if (selectedFile 
-      && (selectedFile.type === "application/pdf"||selectedFile.type  === "docx" || selectedFile.type  === "pptx" || selectedFile.type  === "XLSX")
-      ) {
+    const fileType = selectedFile.name.split(".")[1];
+    // console.log("sff",selectedFile)
+    if (
+      selectedFile &&
+      (fileType === "pdf" ||
+        fileType === "docx" ||
+        fileType === "pptx" ||
+        fileType === "xlsx")
+    ) {
       setDisableUploadBtn(false);
       setFile(selectedFile);
       setError("");
     } else {
       setFile(null);
-      setError("Please choose a valid PDF file");
+      setError(
+        "Please choose a valid file; make sure file extension must be end with pdf/docx/pptx/xlsx"
+      );
     }
   };
 
@@ -72,7 +80,7 @@ export default function CreatePdf() {
     formData.append("file", file);
     console.log("fff", file.name.split(".")[1]);
     const fileType = file.name.split(".")[1];
-    if (fileType === "docx" || fileType === "pptx" || fileType === "XLSX") {
+    if (fileType === "docx" || fileType === "pptx" || fileType === "xlsx") {
       const convertedData = await convertFile(formData);
 
       if (convertedData !== "file converted successfully") {
